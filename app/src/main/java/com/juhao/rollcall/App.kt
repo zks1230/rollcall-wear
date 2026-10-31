@@ -22,6 +22,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
@@ -170,6 +172,8 @@ fun RollCallApp(controller: RollCallController) {
                     onDayModeChange = controller::setDayMode,
                     onExport = controller::exportCsv,
                     onRestoreSeedRoster = controller::restoreSeedRoster,
+                    onUiScaleChange = controller::setUiScale,
+                    onCornerRadiusChange = controller::setCornerRadius,
                 )
             }
         }
@@ -177,17 +181,40 @@ fun RollCallApp(controller: RollCallController) {
 
     val swipeDismissableSceneStrategy = rememberSwipeDismissableSceneStrategy<NavKey>()
 
-    RollCallTheme(accent = accent, isDay = state.dayMode) {
-        CompositionLocalProvider(LocalScreenShape provides screenShape) {
-            AppScaffold(
-                modifier = Modifier.safeDrawingPadding(),
-                timeText = { ClockTimeText() },
-            ) {
-                NavDisplay(
-                    backStack = backStack,
-                    entryProvider = entryProvider,
-                    sceneStrategies = listOf(swipeDismissableSceneStrategy),
-                )
+    // 界面缩放：直接改 Compose 的 density，dp 和字号一起放大，立即生效、不用重启。
+    val baseDensity = LocalDensity.current
+    val scaledDensity = remember(baseDensity, state.uiScale) {
+        Density(
+            density = baseDensity.density * state.uiScale.coerceIn(0.8f, 1.6f),
+            fontScale = baseDensity.fontScale,
+        )
+    }
+    // 圆角按“物理 dp”算：不跟着界面缩放一起放大，否则 60dp 会被放大成 75dp。
+    val cornerRadiusPx = with(baseDensity) { state.cornerRadiusDp.dp.toPx() }
+
+    CompositionLocalProvider(LocalDensity provides scaledDensity) {
+        RollCallTheme(accent = accent, isDay = state.dayMode) {
+            CompositionLocalProvider(LocalScreenShape provides screenShape) {
+                val cornerDp = with(scaledDensity) { cornerRadiusPx.toDp() }
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clip(RoundedCornerShape(cornerDp))
+                        .background(MaterialTheme.colorScheme.background),
+                ) {
+                    AppScaffold(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .safeDrawingPadding(),
+                        timeText = { ClockTimeText() },
+                    ) {
+                        NavDisplay(
+                            backStack = backStack,
+                            entryProvider = entryProvider,
+                            sceneStrategies = listOf(swipeDismissableSceneStrategy),
+                        )
+                    }
+                }
             }
         }
     }

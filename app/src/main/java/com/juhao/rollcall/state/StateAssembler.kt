@@ -49,6 +49,8 @@ object StateAssembler {
             students = students,
             mode = settings.mode,
             dayMode = settings.dayMode,
+            uiScale = settings.uiScale,
+            cornerRadiusDp = settings.cornerRadiusDp,
             attendance = attendance,
             counts = AttendanceLogic.counts(students, marks, settings.mode),
             homework = homework,

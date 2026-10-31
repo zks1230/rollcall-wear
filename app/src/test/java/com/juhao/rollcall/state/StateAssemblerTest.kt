@@ -102,4 +102,23 @@ class StateAssemblerTest {
         assertEquals(3, state.week.daysWithAttendance)
         assertEquals(3, state.week.daysWithHomework)
     }
+
+    @Test
+    fun `界面缩放和圆角设置会透传到状态里`() {
+        val state = StateAssembler.assemble(
+            students,
+            Settings(uiScale = 1.4f, cornerRadiusDp = 80f),
+            records,
+            "2026-10-31",
+        )
+        assertEquals(1.4f, state.uiScale, 0.001f)
+        assertEquals(80f, state.cornerRadiusDp, 0.001f)
+    }
+
+    @Test
+    fun `默认设置是 1_25 倍缩放和 60dp 圆角`() {
+        val state = StateAssembler.assemble(students, Settings(), records, "2026-10-31")
+        assertEquals(1.25f, state.uiScale, 0.001f)
+        assertEquals(60f, state.cornerRadiusDp, 0.001f)
+    }
 }

@@ -41,6 +41,9 @@ class SerializationTest {
         assertEquals(false, decoded.dayMode)
         assertEquals("", decoded.lastExportInfo)
         assertEquals(false, decoded.seeded)
+        // 老版本 JSON 没有这两个字段时，要落到新默认值
+        assertEquals(DEFAULT_UI_SCALE, decoded.uiScale, 0.001f)
+        assertEquals(DEFAULT_CORNER_RADIUS_DP, decoded.cornerRadiusDp, 0.001f)
     }
 
     @Test

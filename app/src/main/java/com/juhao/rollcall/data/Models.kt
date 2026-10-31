@@ -46,11 +46,24 @@ data class DayRecord(
 data class Settings(
     val mode: AttendanceMode = AttendanceMode.FAST,
     val dayMode: Boolean = false,
+    /** 界面缩放：1.0 = 原始大小，1.25 = 常见的大字模式。 */
+    val uiScale: Float = DEFAULT_UI_SCALE,
+    /** 方屏圆角半径（物理 dp，不随 uiScale 缩放），用于把内容裁进屏幕圆角。 */
+    val cornerRadiusDp: Float = DEFAULT_CORNER_RADIUS_DP,
     /** 最近一次导出结果，展示在“导出”按钮下方。 */
     val lastExportInfo: String = "",
     /** 首次启动写入内置名单后置 true，避免删空名单后被重新种入。 */
     val seeded: Boolean = false,
 )
+
+/** 界面缩放可选档位。 */
+val UI_SCALE_OPTIONS = listOf(1.0f, 1.15f, 1.25f, 1.4f)
+
+/** 圆角可选档位（0 = 不裁切）。 */
+val CORNER_RADIUS_OPTIONS = listOf(0f, 40f, 60f, 80f)
+
+const val DEFAULT_UI_SCALE = 1.25f
+const val DEFAULT_CORNER_RADIUS_DP = 60f
 
 /** 出勤统计（某一天）。 */
 data class AttendanceCounts(

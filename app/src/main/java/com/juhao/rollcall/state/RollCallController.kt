@@ -173,6 +173,16 @@ class RollCallController(context: Context) {
         write { store.updateSettings { it.copy(dayMode = enabled) } }
     }
 
+    /** 界面缩放：1.0 / 1.15 / 1.25 / 1.4，立即生效（Compose 的 LocalDensity）。 */
+    fun setUiScale(scale: Float) {
+        write { store.updateSettings { it.copy(uiScale = scale.coerceIn(0.8f, 1.6f)) } }
+    }
+
+    /** 方屏圆角半径：把内容裁进硬件圆角，避免字被切在角上。 */
+    fun setCornerRadius(radiusDp: Float) {
+        write { store.updateSettings { it.copy(cornerRadiusDp = radiusDp.coerceIn(0f, 120f)) } }
+    }
+
     fun exportCsv() {
         val snapshot = _state.value
         _state.update { it.copy(exporting = true) }

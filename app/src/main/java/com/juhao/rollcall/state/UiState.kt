@@ -19,6 +19,10 @@ data class UiState(
     val students: List<Student> = emptyList(),
     val mode: AttendanceMode = AttendanceMode.FAST,
     val dayMode: Boolean = false,
+    /** 界面缩放倍数（1.0 = 原始，1.25 = 大字）。 */
+    val uiScale: Float = 1.25f,
+    /** 方屏圆角半径（dp，物理尺寸，不随缩放变）。 */
+    val cornerRadiusDp: Float = 60f,
     /** 已解析的出勤状态：null = 未点（只在“逐个”模式出现）。 */
     val attendance: Map<Long, AttendanceStatus?> = emptyMap(),
     val counts: AttendanceCounts = AttendanceCounts(),

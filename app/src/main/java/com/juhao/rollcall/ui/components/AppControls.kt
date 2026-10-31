@@ -147,8 +147,8 @@ fun ConfirmActionButton(
 @Composable
 fun SectionHeader(
     title: String,
-    subtitle: String? = null,
     modifier: Modifier = Modifier,
+    subtitle: String? = null,
 ) {
     Column(modifier = modifier) {
         Text(
