@@ -23,7 +23,8 @@
 ## 快速开始
 
 ```powershell
-cd C:\Users\Administrator\Downloads\person
+git clone https://github.com/zks1230/rollcall-wear.git
+cd rollcall-wear
 
 # 编译 Debug APK（约 1–5 分钟，视机器内存）
 .\gradlew.bat :app:assembleDebug
