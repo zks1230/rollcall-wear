@@ -119,9 +119,10 @@ fun HomeworkPage(
                 val submitted = state.homework[student.id] ?: false
                 StudentCell(
                     name = student.name,
-                    statusLabel = if (submitted) "交" else "未交",
+                    statusLabel = if (submitted) "已交" else "未交",
                     accent = homeworkColor(submitted),
                     emphasized = !submitted,
+                    confirmed = submitted,
                     onClick = { onToggle(student.id) },
                     modifier = Modifier.fillMaxSize(),
                 )

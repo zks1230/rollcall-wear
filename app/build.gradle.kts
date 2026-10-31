@@ -15,18 +15,17 @@ android {
         applicationId = "com.juhao.rollcall"
         minSdk = 26
         targetSdk = 37
-        versionCode = 3
-        versionName = "1.0.2"
+        versionCode = 4
+        versionName = "1.0.0"
     }
 
     buildTypes {
         release {
-            isMinifyEnabled = true
-            isShrinkResources = true
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
+            // 个人项目：不混淆也能装、体积差不多；先保证 kotlinx.serialization 不会被 R8 裁掉。
+            // 用 debug 签名是为了能直接侧载（换机器构建时要重新安装，数据会清）。
+            isMinifyEnabled = false
+            isShrinkResources = false
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
 

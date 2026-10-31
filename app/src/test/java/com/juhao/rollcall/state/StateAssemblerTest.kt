@@ -116,10 +116,10 @@ class StateAssemblerTest {
     }
 
     @Test
-    fun `默认设置是 1_25 倍缩放和 60dp 圆角`() {
+    fun `默认设置是 1_25 倍缩放和 68dp 圆角`() {
         val state = StateAssembler.assemble(students, Settings(), records, "2026-10-31")
         assertEquals(1.25f, state.uiScale, 0.001f)
-        assertEquals(60f, state.cornerRadiusDp, 0.001f)
+        assertEquals(68f, state.cornerRadiusDp, 0.001f)
     }
 
     @Test

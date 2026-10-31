@@ -31,8 +31,13 @@ import androidx.wear.compose.material3.Text
 import com.juhao.rollcall.data.Student
 
 /**
- * 一个学生 = 一个格子。
- * [accent] 是状态色，[emphasized] 表示“异常状态”，用更强的染色和描边突出。
+ * 一个学生 = 一个格子。三种视觉状态，必须一眼分得清：
+ *
+ * - [confirmed]：已确认正常（到 / 已交）→ 明显的一层状态色底 + 状态色描边 + 状态色小字
+ * - [emphasized]：异常（请假 / 迟到 / 缺勤 / 未交）→ 更重的染色 + 粗描边
+ * - 都不是：未点 / 未记录 → 深色底 + 灰字
+ *
+ * 之前“到”只有一条很淡的描边，老师会误以为没点到，所以这里把确认态也染上底色。
  */
 @Composable
 fun StudentCell(
@@ -42,15 +47,25 @@ fun StudentCell(
     emphasized: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    confirmed: Boolean = false,
 ) {
     val haptics = LocalHapticFeedback.current
     val shape = RoundedCornerShape(13.dp)
-    val background = if (emphasized) {
-        accent.copy(alpha = 0.28f)
-    } else {
-        MaterialTheme.colorScheme.surfaceContainerLow
+
+    val background = when {
+        emphasized -> accent.copy(alpha = 0.30f)
+        confirmed -> accent.copy(alpha = 0.22f)
+        else -> MaterialTheme.colorScheme.surfaceContainerLow
     }
-    val borderColor = if (emphasized) accent.copy(alpha = 0.80f) else accent.copy(alpha = 0.20f)
+    val borderColor = when {
+        emphasized -> accent.copy(alpha = 0.95f)
+        confirmed -> accent.copy(alpha = 0.70f)
+        else -> MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.45f)
+    }
+    val labelColor = when {
+        emphasized || confirmed -> accent
+        else -> MaterialTheme.colorScheme.onSurfaceVariant
+    }
 
     Box(
         modifier = modifier
@@ -70,7 +85,7 @@ fun StudentCell(
                 style = MaterialTheme.typography.labelLarge.copy(
                     fontSize = 13.sp,
                     lineHeight = 15.sp,
-                    fontWeight = FontWeight.Medium,
+                    fontWeight = if (confirmed || emphasized) FontWeight.Medium else FontWeight.Normal,
                 ),
                 color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 1,
@@ -79,8 +94,12 @@ fun StudentCell(
             if (statusLabel != null) {
                 Text(
                     text = statusLabel,
-                    style = MaterialTheme.typography.labelSmall.copy(fontSize = 9.sp, lineHeight = 10.sp),
-                    color = if (emphasized) accent else MaterialTheme.colorScheme.onSurfaceVariant,
+                    style = MaterialTheme.typography.labelSmall.copy(
+                        fontSize = 9.sp,
+                        lineHeight = 10.sp,
+                        fontWeight = if (confirmed || emphasized) FontWeight.Medium else FontWeight.Normal,
+                    ),
+                    color = labelColor,
                     maxLines = 1,
                 )
             }

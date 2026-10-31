@@ -66,10 +66,10 @@ data class Settings(
 val UI_SCALE_OPTIONS = listOf(1.0f, 1.15f, 1.25f, 1.4f)
 
 /** 圆角可选档位（0 = 不裁切）。 */
-val CORNER_RADIUS_OPTIONS = listOf(0f, 40f, 60f, 80f)
+val CORNER_RADIUS_OPTIONS = listOf(0f, 48f, 68f, 80f)
 
 const val DEFAULT_UI_SCALE = 1.25f
-const val DEFAULT_CORNER_RADIUS_DP = 60f
+const val DEFAULT_CORNER_RADIUS_DP = 68f
 
 /** 出勤统计（某一天）。 */
 data class AttendanceCounts(

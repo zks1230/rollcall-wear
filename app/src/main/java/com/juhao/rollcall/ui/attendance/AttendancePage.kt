@@ -66,8 +66,7 @@ fun AttendancePage(
                 val status = state.attendance[student.id]
                 val label = when {
                     status == null -> "未点"
-                    status == AttendanceStatus.PRESENT ->
-                        if (state.mode == AttendanceMode.FAST) null else status.shortLabel
+                    status == AttendanceStatus.PRESENT -> "到"
                     else -> status.shortLabel
                 }
                 StudentCell(
@@ -75,6 +74,7 @@ fun AttendancePage(
                     statusLabel = label,
                     accent = attendanceColor(status),
                     emphasized = status != null && status != AttendanceStatus.PRESENT,
+                    confirmed = status == AttendanceStatus.PRESENT,
                     onClick = { onCycle(student.id) },
                     modifier = Modifier.fillMaxSize(),
                 )
