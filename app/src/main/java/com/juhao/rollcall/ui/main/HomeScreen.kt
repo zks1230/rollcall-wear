@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.wear.compose.foundation.pager.HorizontalPager
@@ -12,6 +13,7 @@ import androidx.wear.compose.material3.HorizontalPagerScaffold
 import com.juhao.rollcall.data.AttendanceMode
 import com.juhao.rollcall.state.UiState
 import com.juhao.rollcall.ui.attendance.AttendancePage
+import com.juhao.rollcall.ui.components.HintText
 import com.juhao.rollcall.ui.homework.HomeworkPage
 import com.juhao.rollcall.ui.stats.StatsPage
 import com.juhao.rollcall.utils.KeepScreenOn
@@ -47,7 +49,12 @@ fun HomeScreen(
                     .fillMaxSize()
                     .padding(top = 24.dp, bottom = 16.dp),
             ) {
-                when (page) {
+                if (state.loading) {
+                    // 首次启动读取 DataStore + 导入内置名单的几百毫秒，别闪一下“名单为空”
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        HintText("准备中…")
+                    }
+                } else when (page) {
                     0 -> AttendancePage(
                         state = state,
                         onCycle = onCycleAttendance,

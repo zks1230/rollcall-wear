@@ -93,7 +93,16 @@ app/src/main/java/com/juhao/rollcall/
 .\gradlew.bat :app:testDebugUnitTest
 ```
 
-覆盖：名单解析、点击循环与计数、周统计窗口、CSV 生成（都是纯函数，不依赖设备）。
+24 个纯 JVM 单测（不依赖设备、几秒跑完），覆盖：
+
+| 文件 | 覆盖什么 |
+| --- | --- |
+| `NameListParserTest` | 换行/逗号/顿号/空格拆分、去序号、表头过滤 |
+| `AttendanceLogicTest` | 点击循环（快速/逐个）、默认值解析、计数 |
+| `StateAssemblerTest` | 数据 → UiState 的组装：默认到齐、未点、历史倒序、周统计窗口 |
+| `StatsCalculatorTest` | 近 7 天窗口、缺勤/作业未交排行 |
+| `SerializationTest` | DataStore JSON 往返、未知字段兼容 |
+| `CsvExporterTest` | CSV 列内容、两种模式下的文案 |
 
 ## 已知限制
 

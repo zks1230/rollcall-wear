@@ -65,7 +65,7 @@ class RollCallController(context: Context) {
                 store.allRecords(),
                 today,
             ) { students, settings, records, date ->
-                buildUiState(students, settings, records, date)
+                StateAssembler.assemble(students, settings, records, date)
             }
                 .catch { /* DataStore 短暂异常时保留旧状态 */ }
                 .collect { _state.value = it }
@@ -200,69 +200,8 @@ class RollCallController(context: Context) {
         }
     }
 
-    private fun buildUiState(
-        students: List<Student>,
-        settings: Settings,
-        records: Map<String, DayRecord>,
-        date: String,
-    ): UiState {
-        val record = records[date] ?: DayRecord()
-        val marks = record.attendance
-        val counts = AttendanceLogic.counts(students, marks, settings.mode)
-        val attendance = students.associate { student ->
-            student.id to AttendanceLogic.resolve(marks[student.id.toString()], settings.mode)
-        }
-        val homework = students.associate { student ->
-            student.id to (record.homework[student.id.toString()] ?: false)
-        }
-        val history = records.keys
-            .sortedDescending()
-            .take(HISTORY_LIMIT)
-            .map { day -> summaryOf(day, students, records[day] ?: DayRecord(), settings.mode) }
-
-        return UiState(
-            loading = false,
-            today = date,
-            headerLabel = DateFormats.headerLabel(date, DateFormats.todayString()),
-            students = students,
-            mode = settings.mode,
-            dayMode = settings.dayMode,
-            attendance = attendance,
-            counts = counts,
-            homework = homework,
-            homeworkSubmitted = homework.values.count { it },
-            week = StatsCalculator.week(students, records, date, WEEK_DAYS),
-            history = history,
-            lastExportInfo = settings.lastExportInfo,
-        )
-    }
-
-    private fun summaryOf(
-        date: String,
-        students: List<Student>,
-        record: DayRecord,
-        mode: AttendanceMode,
-    ): DaySummary {
-        val homework = students.associate { student ->
-            student.id to (record.homework[student.id.toString()] ?: false)
-        }
-        return DaySummary(
-            date = date,
-            label = DateFormats.historyLabel(date, DateFormats.todayString()),
-            counts = AttendanceLogic.counts(students, record.attendance, mode),
-            homeworkSubmitted = homework.values.count { it },
-            totalStudents = students.size,
-            attendance = students.associate { student ->
-                student.id to AttendanceLogic.resolve(record.attendance[student.id.toString()], mode)
-            },
-            homework = homework,
-            attendanceMarked = record.attendance.isNotEmpty(),
-            homeworkMarked = record.homework.isNotEmpty(),
-        )
-    }
-
     private companion object {
-        const val HISTORY_LIMIT = 60
-        const val WEEK_DAYS = 7
+        const val HISTORY_LIMIT = StateAssembler.HISTORY_LIMIT
+        const val WEEK_DAYS = StateAssembler.WEEK_DAYS
     }
 }
