@@ -17,15 +17,16 @@ object CsvExporter {
     fun buildCsv(
         students: List<Student>,
         records: Map<String, DayRecord>,
-        mode: AttendanceMode,
     ): String {
         val builder = StringBuilder()
         builder.append(HEADER).append("\r\n")
         records.keys.sorted().forEach { date ->
             val record = records.getValue(date)
+            // 按名单顺序输出；名单本身是拼音 A→Z 排好的
             students.forEach { student ->
                 val id = student.id.toString()
-                val status = AttendanceLogic.resolve(record.attendance[id], mode)
+                // 每一天按当天记录的模式解析，不受现在设置影响
+                val status = AttendanceLogic.resolve(record.attendance[id], record.mode)
                 val attendanceText = status?.label ?: "未点"
                 val homeworkText = when {
                     !record.homework.containsKey(id) -> "未记"
@@ -47,7 +48,6 @@ object CsvExporter {
         context: Context,
         students: List<Student>,
         records: Map<String, DayRecord>,
-        mode: AttendanceMode,
     ): String {
         if (students.isEmpty() || records.isEmpty()) return ""
         val dir = context.getExternalFilesDir(null) ?: context.filesDir
@@ -56,7 +56,7 @@ object CsvExporter {
         val file = File(dir, "点名记录_$stamp.csv")
         return runCatching {
             // BOM 让 Excel 正确识别 UTF-8
-            file.writeText("\uFEFF" + buildCsv(students, records, mode), Charsets.UTF_8)
+            file.writeText("\uFEFF" + buildCsv(students, records), Charsets.UTF_8)
             file.absolutePath
         }.getOrDefault("")
     }

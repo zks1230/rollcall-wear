@@ -90,14 +90,14 @@ class RollCallController(context: Context) {
         val snapshot = _state.value
         if (snapshot.today.isEmpty()) return
         val next = AttendanceLogic.next(snapshot.attendance[studentId], snapshot.mode)
-        write { store.setAttendance(snapshot.today, studentId, next) }
+        write { store.setAttendance(snapshot.today, studentId, next, snapshot.mode) }
     }
 
     /** 快速模式 = 全员到齐；逐个模式 = 全部未点。 */
     fun clearTodayAttendance() {
         val snapshot = _state.value
         if (snapshot.today.isEmpty()) return
-        write { store.clearAttendance(snapshot.today) }
+        write { store.clearAttendance(snapshot.today, snapshot.mode) }
     }
 
     fun setMode(mode: AttendanceMode) {
@@ -189,7 +189,7 @@ class RollCallController(context: Context) {
         scope.launch {
             val records = runCatching { store.allRecords().first() }.getOrDefault(emptyMap())
             val path = withContext(Dispatchers.IO) {
-                runCatching { CsvExporter.export(appContext, snapshot.students, records, snapshot.mode) }
+                runCatching { CsvExporter.export(appContext, snapshot.students, records) }
                     .getOrDefault("")
             }
             val info = if (path.isEmpty()) "没有可导出的记录" else path

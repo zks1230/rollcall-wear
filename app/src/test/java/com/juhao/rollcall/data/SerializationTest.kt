@@ -16,6 +16,7 @@ class SerializationTest {
     @Test
     fun `一天的记录可以原样往返`() {
         val record = DayRecord(
+            mode = AttendanceMode.STRICT,
             attendance = mapOf(
                 "1" to AttendanceStatus.ABSENT,
                 "2" to AttendanceStatus.LEAVE,
@@ -28,8 +29,18 @@ class SerializationTest {
 
         assertEquals(record, decoded)
         assertTrue(encoded.contains("ABSENT"))
+        assertTrue(encoded.contains("STRICT"))
         // 学生 id 是字符串 key，不要退化成数组
         assertTrue(encoded.contains("\"1\""))
+    }
+
+    @Test
+    fun `旧版没写模式的记录按快速模式解析`() {
+        val decoded = json.decodeFromString<DayRecord>(
+            """{"attendance":{"1":"ABSENT"},"homework":{}}"""
+        )
+        assertEquals(AttendanceMode.FAST, decoded.mode)
+        assertEquals(AttendanceStatus.ABSENT, decoded.attendance["1"])
     }
 
     @Test

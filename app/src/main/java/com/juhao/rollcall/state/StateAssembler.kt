@@ -40,7 +40,7 @@ object StateAssembler {
         val history = records.keys
             .sortedDescending()
             .take(historyLimit)
-            .map { day -> summaryOf(day, students, records[day] ?: DayRecord(), settings.mode, today) }
+            .map { day -> summaryOf(day, students, records[day] ?: DayRecord(), today) }
 
         return UiState(
             loading = false,
@@ -61,13 +61,17 @@ object StateAssembler {
         )
     }
 
+    /**
+     * 历史某天：用那天记录里的模式来解析（[DayRecord.mode]），
+     * 这样今天把模式切到“逐个”，过去几天的“全员到齐”不会被读成“全员未点”。
+     */
     fun summaryOf(
         date: String,
         students: List<Student>,
         record: DayRecord,
-        mode: AttendanceMode,
         today: String = date,
     ): DaySummary {
+        val mode = record.mode
         val homework = students.associate { student ->
             student.id to (record.homework[student.id.toString()] ?: false)
         }

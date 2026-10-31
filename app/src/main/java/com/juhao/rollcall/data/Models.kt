@@ -36,7 +36,13 @@ data class Student(
 
 @Serializable
 data class DayRecord(
-    /** key = studentId.toString()。只存“显式标记”，缺省含义由 [AttendanceMode] 决定。 */
+    /**
+     * 那一天用的是哪种点名模式。历史按这个解析：
+     * 快速模式下“没标记 = 到齐”，逐个模式下“没标记 = 未点”，
+     * 不能因为以后切换了模式，把过去几天读成“全员未点”。
+     */
+    val mode: AttendanceMode = AttendanceMode.FAST,
+    /** key = studentId.toString()。只存“显式标记”，缺省含义由 [mode] 决定。 */
     val attendance: Map<String, AttendanceStatus> = emptyMap(),
     /** key = studentId.toString()，value = 是否交了作业。缺省 = 未交。 */
     val homework: Map<String, Boolean> = emptyMap(),

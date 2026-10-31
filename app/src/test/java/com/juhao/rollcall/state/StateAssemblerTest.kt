@@ -121,4 +121,21 @@ class StateAssemblerTest {
         assertEquals(1.25f, state.uiScale, 0.001f)
         assertEquals(60f, state.cornerRadiusDp, 0.001f)
     }
+
+    @Test
+    fun `今天切到逐个模式，不会把历史读成全员未点`() {
+        val state = StateAssembler.assemble(
+            students,
+            Settings(mode = AttendanceMode.STRICT),
+            records,
+            "2026-10-31",
+        )
+        // 今天：上一个测试里记录了王五缺勤，其余未点
+        assertEquals(2, state.counts.unmarked)
+        // 历史里的 10-29 是当年快速模式记的：张三缺勤，李四/王五算到齐
+        val past = state.history.first { it.date == "2026-10-29" }
+        assertEquals(2, past.counts.present)
+        assertEquals(1, past.counts.absent)
+        assertEquals(0, past.counts.unmarked)
+    }
 }

@@ -67,18 +67,18 @@ class RollCallStore(private val context: Context) {
 
     // ---------- 出勤 ----------
 
-    suspend fun setAttendance(date: String, studentId: Long, mark: AttendanceStatus?) {
+    suspend fun setAttendance(date: String, studentId: Long, mark: AttendanceStatus?, mode: AttendanceMode) {
         editRecord(date) { record ->
             val key = studentId.toString()
             val updated = record.attendance.toMutableMap()
             if (mark == null) updated.remove(key) else updated[key] = mark
-            record.copy(attendance = updated)
+            record.copy(mode = mode, attendance = updated)
         }
     }
 
     /** 清空当天的出勤标记：快速模式 = 全员到齐，逐个模式 = 全部未点。 */
-    suspend fun clearAttendance(date: String) {
-        editRecord(date) { it.copy(attendance = emptyMap()) }
+    suspend fun clearAttendance(date: String, mode: AttendanceMode) {
+        editRecord(date) { it.copy(mode = mode, attendance = emptyMap()) }
     }
 
     // ---------- 作业 ----------
